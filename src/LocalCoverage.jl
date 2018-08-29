@@ -1,4 +1,3 @@
-__precompile__()
 module LocalCoverage
 
 using Coverage
@@ -54,9 +53,13 @@ is placed in `Pkg.dir(pkg, \"$(COVDIR)\")`. The summary is in
 
 Use [`clean_coverage`](@ref) for cleaning.
 """
-function generate_coverage(pkg; genhtml = true)
-    Pkg.test(pkg; coverage = true)
-    cd(Pkg.dir(pkg)) do
+function generate_coverage(pkg = nothing; genhtml = true)
+    path = "."
+    if pkg != nothing
+        Pkg.test(pkg; coverage = true)
+        path = Pkg.dir(pkg)
+    end
+    cd(path) do
         coverage = Coverage.process_folder()
         isdir(COVDIR) || mkdir(COVDIR)
         tracefile = "$(COVDIR)/lcov.info"
